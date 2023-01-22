@@ -21,13 +21,15 @@ class BarberShop {
         synchronized (customerList) {
             System.out.println("Barber went to check the queue");
             while (customerList.size() == 0) {
+                isOccupied=false;
                 System.out.println("Barber went back and fell asleep waiting.");
                 try {
                     customerList.wait();
-                    System.out.println("He woke the Barber up and left their seat");
+                    System.out.println("He woke the Barber up");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                isOccupied=true;
             }
             customer = (Customer) ((LinkedList<?>) customerList).poll();
             if (customerList.size() > 0) {
@@ -56,10 +58,12 @@ class BarberShop {
             }
 
             ((LinkedList<Customer>) customerList).offer(customer);
-            System.out.println(customer.getName() + " got the chair.");
 
             if (customerList.size() == 1) {
                 customerList.notify();
+            }
+            if(isOccupied) {
+                System.out.println(customer.getName() + " got the chair.");
             }
         }
     }
